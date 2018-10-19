@@ -10,6 +10,7 @@
 #include "json.h"
 #include "map.h"
 #include "mapgen.h"
+#include "map_extras.h"
 #include "output.h"
 #include "overmap.h"
 #include "overmapbuffer.h"
@@ -18,7 +19,6 @@
 #include <algorithm>
 
 const efftype_id effect_bleed( "bleed" );
-
 
 namespace
 {
@@ -204,7 +204,7 @@ tripoint start_location::find_player_initial_location() const
     // Spiral out from the world origin scanning for a compatible starting location,
     // creating overmaps as necessary.
     const int radius = 32;
-    for( const point omp : closest_points_first( radius, point( 0, 0 ) ) ) {
+    for( const point &omp : closest_points_first( radius, point( 0, 0 ) ) ) {
         overmap &omap = overmap_buffer.get( omp.x, omp.y );
         const tripoint omtstart = omap.find_random_omt( target() );
         if( omtstart != overmap::invalid_tripoint ) {
@@ -295,10 +295,9 @@ void start_location::place_player( player &u ) const
     // Need the "real" map with it's inside/outside cache and the like.
     map &m = g->m;
     // Start us off somewhere in the center of the map
-    u.setx( SEEX * int( MAPSIZE / 2 ) + 5 );
-    u.sety( SEEY * int( MAPSIZE / 2 ) + 6 );
+    u.setx( SEEX * int( MAPSIZE / 2 ) );
+    u.sety( SEEY * int( MAPSIZE / 2 ) );
     u.setz( g->get_levz() );
-
     m.build_map_cache( m.get_abs_sub().z );
     const bool must_be_inside = flags().count( "ALLOW_OUTSIDE" ) == 0;
     ///\EFFECT_STR allows player to start behind less-bashable furniture and terrain
@@ -330,8 +329,8 @@ void start_location::place_player( player &u ) const
     };
 
     while( !found_good_spot && tries < 100 ) {
-        tripoint rand_point( ( SEEX * int( MAPSIZE / 2 ) ) + rng( 0, SEEX * 2 ),
-                             ( SEEY * int( MAPSIZE / 2 ) ) + rng( 0, SEEY * 2 ),
+        tripoint rand_point( ( SEEX * int( MAPSIZE / 2 ) ) + rng( 0, SEEX * 2 - 1 ),
+                             ( SEEY * int( MAPSIZE / 2 ) ) + rng( 0, SEEY * 2 - 1 ),
                              u.posz() );
         check_spot( rand_point );
     }

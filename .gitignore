@@ -29,6 +29,7 @@ build/
 dep/
 *.o
 *.d
+*.a
 cmake-build-debug/
 
 data/font/
@@ -140,3 +141,21 @@ msvc-full-features/distribution
 
 # Transifex Client
 .tx/
+
+# Snapcraft build directories
+prime
+snap
+stage
+
+# Snapcraft build file
+*.snap
+
+# Eclipse IDE
+.cproject
+.settings/
+
+# Apple Xcode IDE
+Xcode/
+
+# gdb
+.gdb_history

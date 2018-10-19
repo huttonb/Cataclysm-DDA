@@ -38,11 +38,11 @@ class player_morale
         void add( morale_type type, int bonus, int max_bonus = 0, time_duration duration = 6_minutes,
                   time_duration decay_start = 3_minutes, bool capped = false, const itype *item_type = nullptr );
         /** Sets the new level for the permanent morale, or creates one */
-        void set_permanent( morale_type type, int bonus, const itype *item_type = nullptr );
+        void set_permanent( const morale_type &type, int bonus, const itype *item_type = nullptr );
         /** Returns bonus from specified morale */
-        int has( morale_type type, const itype *item_type = nullptr ) const;
+        int has( const morale_type &type, const itype *item_type = nullptr ) const;
         /** Removes specified morale */
-        void remove( morale_type type, const itype *item_type = nullptr );
+        void remove( const morale_type &type, const itype *item_type = nullptr );
         /** Clears up all morale points */
         void clear();
         /** Returns overall morale level */
@@ -60,6 +60,7 @@ class player_morale
         void on_stat_change( const std::string &stat, int value );
         void on_item_wear( const item &it );
         void on_item_takeoff( const item &it );
+        void on_worn_item_washed( const item &it );
         void on_effect_int_change( const efftype_id &eid, int intensity, body_part bp = num_bp );
 
         void store( JsonOut &jsout ) const;
@@ -93,7 +94,7 @@ class player_morale
                 int get_net_bonus( const morale_mult &mult ) const;
                 bool is_expired() const;
                 bool is_permanent() const;
-                bool matches( morale_type _type, const itype *_item_type = nullptr ) const;
+                bool matches( const morale_type &_type, const itype *_item_type = nullptr ) const;
                 bool matches( const morale_point &mp ) const;
 
                 void add( int new_bonus, int new_max_bonus, time_duration new_duration,

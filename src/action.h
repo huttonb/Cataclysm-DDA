@@ -54,8 +54,10 @@ enum action_id : int {
     ACTION_TOGGLE_MOVE,
     /**@}*/
 
-    // Viewport movement actions
+    // Viewport movement actions and related
     /**@{*/
+    /** Toggle memorized tiles being shown */
+    ACTION_TOGGLE_MAP_MEMORY,
     /** Center the viewport on character */
     ACTION_CENTER,
     /** Move viewport north */
@@ -90,6 +92,8 @@ enum action_id : int {
     ACTION_PICKUP,
     /** Grab or let go of an object */
     ACTION_GRAB,
+    /** Haul pile of items, or let go of them */
+    ACTION_HAUL,
     /** Butcher or disassemble objects in current square */
     ACTION_BUTCHER,
     /** Chat with something */
@@ -102,6 +106,8 @@ enum action_id : int {
     ACTION_LIST_ITEMS,
     /** Open the zone manager */
     ACTION_ZONES,
+    /** Sort out the loot */
+    ACTION_LOOT,
     /**@}*/
 
     // Inventory Interaction (including quasi-inventories like bionics)
@@ -250,8 +256,16 @@ enum action_id : int {
     ACTION_ITEMACTION,
     /** Turn pixel minimap on/off */
     ACTION_TOGGLE_PIXEL_MINIMAP,
-    /** Turn auto pulp or butcher on/off */
+    /** Reload current tileset */
+    ACTION_RELOAD_TILESET,
+    /** Turn auto features on/off */
+    ACTION_TOGGLE_AUTO_FEATURES,
+    /** Change auto pulp/butcher mode */
     ACTION_TOGGLE_AUTO_PULP_BUTCHER,
+    /** Turn auto mining on/off */
+    ACTION_TOGGLE_AUTO_MINING,
+    /** Turn auto foraging on/off */
+    ACTION_TOGGLE_AUTO_FORAGING,
     /** Not an action, serves as count of enumerated actions */
     NUM_ACTIONS
     /**@}*/
@@ -307,7 +321,7 @@ std::vector<char> keys_bound_to( action_id act );
  * @param ident Unique string identifier corresponding to an @ref action_id
  * @returns Corresponding action_id for the supplied string identifier
  */
-action_id look_up_action( std::string ident );
+action_id look_up_action( const std::string &ident );
 
 /**
  * Lookup a unique string identifier for a given action ID.
@@ -364,7 +378,7 @@ action_id action_from_key( char ch );
  * @param[out] y Y coordinate of requested tile
  * @returns true if player input was valid, otherwise returns false
  */
-bool choose_adjacent( std::string message, int &x, int &y );
+bool choose_adjacent( const std::string &message, int &x, int &y );
 
 /**
  * Request player input of adjacent tile, possibly including vertical tiles
@@ -382,7 +396,7 @@ bool choose_adjacent( std::string message, int &x, int &y );
  * @param[in] allow_vertical Allows player to select tiles above/below them if true
  * @returns true if player input was valid, otherwise returns false
  */
-bool choose_adjacent( std::string message, tripoint &p, bool allow_vertical = false );
+bool choose_adjacent( const std::string &message, tripoint &p, bool allow_vertical = false );
 
 /**
  * Request player input of a direction on current z-level
@@ -421,7 +435,7 @@ bool choose_direction( const std::string &message, int &x, int &y );
  * @param[in] action_to_highlight An action ID to drive the highlighting output
  * @returns true if player input was valid, otherwise returns false
  */
-bool choose_adjacent_highlight( std::string message, int &x, int &y,
+bool choose_adjacent_highlight( const std::string &message, int &x, int &y,
                                 action_id action_to_highlight );
 
 /**
@@ -462,16 +476,17 @@ bool choose_direction( const std::string &message, tripoint &offset, bool allow_
  * @param[in] action_to_highlight An action ID to drive the highlighting output
  * @returns true if player input was valid, otherwise returns false
  */
-bool choose_adjacent_highlight( std::string message, tripoint &p, action_id action_to_highlight );
+bool choose_adjacent_highlight( const std::string &message, tripoint &p,
+                                action_id action_to_highlight );
 
 // (Press X (or Y)|Try) to Z
 std::string press_x( action_id act );
-std::string press_x( action_id act, std::string key_bound,
-                     std::string key_unbound );
-std::string press_x( action_id act, std::string key_bound_pre,
-                     std::string key_bound_suf, std::string key_unbound );
+std::string press_x( action_id act, const std::string &key_bound,
+                     const std::string &key_unbound );
+std::string press_x( action_id act, const std::string &key_bound_pre,
+                     const std::string &key_bound_suf, const std::string &key_unbound );
 // ('Z'ing|zing) (X( or Y)))
-std::string press_x( action_id act, std::string act_desc );
+std::string press_x( action_id act, const std::string &act_desc );
 
 // Helper function to convert co-ordinate delta to a movement direction
 /**

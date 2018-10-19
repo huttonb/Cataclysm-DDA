@@ -24,8 +24,12 @@ class JsonOut;
 /**
  * Greater-than comparison operator; required by the sort interface
  */
-struct pair_greater_cmp {
-    bool operator()( const std::pair<int, tripoint> &a, const std::pair<int, tripoint> &b ) const;
+struct pair_greater_cmp_first {
+    template< class T, class U >
+    bool operator()( const std::pair<T, U> &a, const std::pair<T, U> &b ) const {
+        return a.first > b.first;
+    }
+
 };
 
 /**
@@ -80,6 +84,21 @@ bool isBetween( int test, int down, int up );
  *         string, otherwise returns false
  */
 bool lcmatch( const std::string &str, const std::string &qry );
+
+/**
+ * Matches text case insensitive with the include/exclude rules of the filter
+ *
+ * Multiple includes/excludes are possible
+ *
+ * Examle: bank,-house,tank,-car
+ * Will match text containing tank or bank while not containing house or car
+ *
+ * @param test String to be matched
+ * @param filter String with include/exclude rules
+ *
+ * @return true if include/exclude rules pass. See Example.
+ */
+bool match_include_exclude( const std::string &text, std::string filter );
 
 /**
  * Basic logistic function.
@@ -202,11 +221,17 @@ double convert_volume( int volume, int *out_scale );
 /**
  * Convert a temperature from degrees Fahrenheit to degrees Celsius.
  *
- * @param fahrenheit Temperature in degrees F.
- *
  * @return Temperature in degrees C.
  */
 double temp_to_celsius( double fahrenheit );
+
+/**
+ * Convert a temperature from degrees Fahrenheit to degrees Kelvin.
+ *
+ * @return Temperature in degrees K.
+ */
+double temp_to_kelvin( double fahrenheit );
+
 
 /**
  * Clamp (number and space wise) value to with,

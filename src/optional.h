@@ -132,6 +132,11 @@ class optional
             return get();
         }
 
+        template<typename O>
+        T value_or( O &&other ) const {
+            return full ? get() : static_cast<T>( other );
+        }
+
         template<class... Args>
         T &emplace( Args &&... args ) {
             reset();
@@ -151,7 +156,6 @@ class optional
                 destruct();
             }
         }
-
 
         optional &operator=( nullopt_t ) noexcept {
             reset();

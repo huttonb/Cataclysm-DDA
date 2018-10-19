@@ -114,7 +114,6 @@ const itype *turret_data::ammo_data() const
     return part->base.ammo_data();
 }
 
-
 itype_id turret_data::ammo_current() const
 {
     auto opts = ammo_options();
@@ -512,6 +511,10 @@ int vehicle::automatic_fire_turret( vehicle_part &pt )
     turret_data gun = turret_query( pt );
 
     int shots = 0;
+
+    if( gun.query() != turret_data::status::ready ) {
+        return shots;
+    }
 
     // The position of the vehicle part.
     tripoint pos = global_part_pos3( pt );

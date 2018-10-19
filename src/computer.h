@@ -28,6 +28,7 @@ enum computer_action {
     COMPACT_RESEARCH,
     COMPACT_MAPS,
     COMPACT_MAP_SEWER,
+    COMPACT_MAP_SUBWAY,
     COMPACT_MISS_LAUNCH,
     COMPACT_MISS_DISARM,
     COMPACT_LIST_BIONICS,
@@ -54,6 +55,9 @@ enum computer_action {
     COMPACT_SRCF_SEAL_ORDER,
     COMPACT_SRCF_SEAL,
     COMPACT_SRCF_ELEVATOR,
+    COMPACT_OPEN_DISARM,
+    COMPACT_UNLOCK_DISARM,
+    COMPACT_RELEASE_DISARM,
     NUM_COMPUTER_ACTIONS
 };
 
@@ -109,7 +113,7 @@ class computer
         // Initialization
         void set_security( int Security );
         void add_option( const computer_option &opt );
-        void add_option( std::string opt_name, computer_action action, int security );
+        void add_option( const std::string &opt_name, computer_action action, int security );
         void add_failure( const computer_failure &failure );
         void add_failure( computer_failure_type failure );
         // Basic usage

@@ -18,9 +18,25 @@
 #include <string>
 #include <locale>
 
+static double pow10( unsigned int n )
+{
+    double ret = 1;
+    double tmp = 10;
+    while( n ) {
+        if( n & 1 ) {
+            ret *= tmp;
+        }
+        tmp *= tmp;
+        n >>= 1;
+    }
+    return ret;
+}
+
 double round_up( double val, unsigned int dp )
 {
-    const double denominator = std::pow( 10.0, double( dp ) );
+    // Some implementations of std::pow does not return the accurate result even
+    // for small powers of 10, so we use a specialized routine to calculate them.
+    const double denominator = pow10( dp );
     return std::ceil( denominator * val ) / denominator;
 }
 
@@ -42,10 +58,38 @@ bool lcmatch( const std::string &str, const std::string &qry )
     return haystack.find( needle ) != std::string::npos;
 }
 
-bool pair_greater_cmp::operator()( const std::pair<int, tripoint> &a,
-                                   const std::pair<int, tripoint> &b ) const
+bool match_include_exclude( const std::string &text, std::string filter )
 {
-    return a.first > b.first;
+    size_t iPos;
+    bool found = false;
+
+    if( filter.empty() ) {
+        return false;
+    }
+
+    do {
+        iPos = filter.find( ',' );
+
+        std::string term = iPos == std::string::npos ? filter : filter.substr( 0, iPos );
+        const bool exclude = term.substr( 0, 1 ) == "-";
+        if( exclude ) {
+            term = term.substr( 1 );
+        }
+
+        if( ( !found || exclude ) && lcmatch( text, term ) ) {
+            if( exclude ) {
+                return false;
+            }
+
+            found = true;
+        }
+
+        if( iPos != std::string::npos ) {
+            filter = filter.substr( iPos + 1, filter.size() );
+        }
+    } while( iPos != std::string::npos );
+
+    return found;
 }
 
 // --- Library functions ---
@@ -105,6 +149,9 @@ const char *velocity_units( const units_type vel_units )
 {
     if( get_option<std::string>( "USE_METRIC_SPEEDS" ) == "mph" ) {
         return _( "mph" );
+    } else if( get_option<std::string>( "USE_METRIC_SPEEDS" ) == "t/t" ) {
+        //~ vehicle speed tiles per turn
+        return _( "t/t" );
     } else {
         switch( vel_units ) {
             case VU_VEHICLE:
@@ -147,10 +194,11 @@ const char *volume_units_long()
 
 double convert_velocity( int velocity, const units_type vel_units )
 {
+    const std::string type = get_option<std::string>( "USE_METRIC_SPEEDS" );
     // internal units to mph conversion
     double ret = double( velocity ) / 100;
 
-    if( get_option<std::string>( "USE_METRIC_SPEEDS" ) == "km/h" ) {
+    if( type == "km/h" ) {
         switch( vel_units ) {
             case VU_VEHICLE:
                 // mph to km/h conversion
@@ -161,7 +209,10 @@ double convert_velocity( int velocity, const units_type vel_units )
                 ret *= 0.447f;
                 break;
         }
+    } else if( type == "t/t" ) {
+        ret /= 10;
     }
+
     return ret;
 }
 
@@ -205,6 +256,11 @@ double convert_volume( int volume, int *out_scale )
 double temp_to_celsius( double fahrenheit )
 {
     return ( ( fahrenheit - 32.0 ) * 5.0 / 9.0 );
+}
+
+double temp_to_kelvin( double fahrenheit )
+{
+    return temp_to_celsius( fahrenheit ) + 273.15;
 }
 
 double clamp_to_width( double value, int width, int &scale )
