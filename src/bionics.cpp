@@ -540,6 +540,8 @@ bool player::activate_bionic( int b, bool eff_only )
             add_msg_if_player( m_info,
                                _( "You need a jumper cable connected to a vehicle to drain power from it." ) );
         }
+    } else if ( bio.id == "bio_media_player") {
+        add_msg_if_player( m_info, _( "You start listening to some sweet music.") );
     }
 
     // Recalculate stats (strength, mods from pain etc.) that could have been affected
@@ -763,6 +765,11 @@ void player::process_bionic( int b )
             x_in_y( battery_per_power - wants_power_amt, battery_per_power ) ) {
             charge_power( 1 );
         }
+    } else if ( bio.id == "bio_media_player" ) {
+        // Values for max morale taken from mp3, volume 0 to mean in-ear music.
+        //
+        iuse::play_music(player, pos, 0, 20);
+            
     }
 }
 
